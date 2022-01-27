@@ -54,6 +54,17 @@ app.get(`/post/:id`, async (req, res) => {
     })
     res.json(result)
   })
+  app.get(`/user/:id`, async (req, res) => {
+    const result = await prisma.user.findUnique({
+        where: {
+            id: parseInt(req.params.id)
+        },
+        include: {
+          blog:true
+        }
+    })
+    res.json(result)
+  })
   app.put(`/user/:id`, async (req, res) => {
     const {id} = req.body
     const result = await prisma.user.update({

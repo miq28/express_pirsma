@@ -23,8 +23,8 @@ model Blog {
   title     String   @db.VarChar(255)
   content   String?
   published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [email],onUpdate: Cascade, onDelete: Cascade)
-  authorId  String
+  author    User     @relation(fields: [authorId], references: [id],onUpdate: Cascade, onDelete: Cascade)
+  authorId  Int
 }
 
 

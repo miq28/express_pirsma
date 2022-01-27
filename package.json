@@ -1,0 +1,22 @@
+{
+  "name": "ex_prisma",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@prisma/client": "3.8.1",
+    "express": "4.17.2"
+  },
+  "devDependencies": {
+    "prisma": "3.8.1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "author": "rede akbar wijaya",
+  "license": "MIT"
+}

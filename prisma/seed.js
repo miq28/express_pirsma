@@ -2,53 +2,67 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-const privilageData = [
-    {
-        name: "admin"
-    },
-    {
-        name: "standard"
-    }
+const roleData = [
+  {
+      name: "admin",
+  },
+  {
+      name: "moderator"
+  },
+  {
+      name: "user"
+  }
 ]
+
 
 const userData = [
   {
-    username: 'Alice',
-    email: 'alice@prisma.io',
-    password:"12345",
-    // privilegeId:1,
-    
+    username: 'admin',
+    name: 'admin',
+    email: 'admin@prisma.io',
+    password:"$2a$10$P7QBEdWK.qhZR2wYAaEpeOJ5n/djpjYoKEOmZs.Ww.Ovt1zZ/kn6i",
+    roleId: 1
   },
   {
-    username: 'Nilu',
+    username: 'moderator',
+    name: 'moderator',
+    email: 'moderator@prisma.io',
+    password:"$2a$10$P7QBEdWK.qhZR2wYAaEpeOJ5n/djpjYoKEOmZs.Ww.Ovt1zZ/kn6i",
+    roleId: 2
+  },
+  {
+    username: 'nilu',
+    name: 'nilu',
     email: 'nilu@prisma.io',
-    password:"12345",
-    //privilegeId:2,
+    password:"$2a$10$P7QBEdWK.qhZR2wYAaEpeOJ5n/djpjYoKEOmZs.Ww.Ovt1zZ/kn6i",
+    roleId: 3
   },
   {
-    username: 'Mahmoud',
+    username: 'mahmoud',
+    name: 'mahmoud',
     email: 'mahmoud@prisma.io',
-    password:"12345",
-    //privilegeId:3
+    password:"$2a$10$P7QBEdWK.qhZR2wYAaEpeOJ5n/djpjYoKEOmZs.Ww.Ovt1zZ/kn6i",
+    roleId: 3
    
   },
 ]
 
 async function main() {
   console.log(`Start seeding ...`)
+  for (const u of roleData) {
+    const role = await prisma.role.create({
+      data: u,
+    })
+    console.log(`Created role with name: ${role.name}`)
+  }
+
   for (const u of userData) {
     const user = await prisma.user.create({
       data: u,
     })
     console.log(`Created user with id: ${user.id}`)
   }
-
-//   for (const u of privilageData) {
-//     const user = await prisma.privilage.create({
-//       data: u,
-//     })
-//     // console.log(`Created user with id: ${user.id}`)
-//   }  
+ 
   console.log(`Seeding finished.`)
 }
 

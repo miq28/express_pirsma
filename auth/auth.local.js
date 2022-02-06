@@ -49,7 +49,7 @@ const passportLocalStrategy = new LocalStrategy({
 )
 
 // const passportLocalStrategyAll = passport.authenticate(passportLocalStrategy, { failureRedirect: '/logan' })
-const passportLocalStrategyAll = passport.authenticate(passportLocalStrategy)
+const authLocal = passport.authenticate(passportLocalStrategy)
 
 passport.serializeUser(function (user, cb) {
     console.log('\n---------> Serialize user')
@@ -61,4 +61,6 @@ passport.deserializeUser(function (obj, cb) {
     cb(null, obj);
 });
 
-module.exports = passportLocalStrategyAll;
+module.exports = {
+    authLocal
+}

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.js",
+    "dev": "nodemon app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "nodemonConfig": {
@@ -18,19 +18,20 @@
     }
   },
   "dependencies": {
-    "@prisma/client": "^3.8.1",
+    "@prisma/client": "^3.9.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "dotenv": "^15.0.0",
     "express": "4.17.2",
     "jsonwebtoken": "^8.5.1",
     "passport": "^0.5.2",
+    "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "kill-port": "^1.6.1",
     "nodemon": "^2.0.15",
-    "prisma": "3.8.1"
+    "prisma": "^3.9.1"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

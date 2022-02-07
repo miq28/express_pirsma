@@ -1,42 +1,25 @@
-//const db = require("../models");
-//const User = db.user;
 
-//const RefreshToken = db.refreshToken;
-//const Op = db.Sequelize.Op;
+// const { PrismaClient } = require('@prisma/client')
+// const prisma = new PrismaClient()
+// const User = prisma.user
+// const Role = prisma.role
 
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
-const User = prisma.user
-const Role = prisma.role
+const {
+    GetAllUsers,
+    GetUserById,
+    GetUserByUsername,
+    GetUserByEmail,
+    CreateUser
+} = require('../services/user.services')
 
 const { isEmptyObject } = require("../utils")
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const passport = require('passport');
 const { GenerateJwtToken } = require('../auth/auth.jwt.js');
 
 // Retrieve all Tutorials from the database.
 exports.getAll = async (req, res) => {
-
-    // const name = req.query.name
-    // var condition = name ? { name: { [Op.iLike]: `%${name}%` } } : null;
-
-    var condition;
-    if (isEmptyObject(req.query)) {
-
-        condition = null;
-    }
-    else if (req.query.name) {
-        condition = { name: { [Op.iLike]: `%${req.query.name}%` } }
-    }
-    else {
-        res.status(400).send('Bad query. Possible keyword: name')
-
-        return;
-    }
-
     try {
-        const data = await User.findMany()
+        const data = await GetAllUsers()
         res.send(data);
     } catch (err) {
         res.status(400).send({
@@ -44,9 +27,7 @@ exports.getAll = async (req, res) => {
                 err.message || "Some error occurred while retrieving users."
         });
     }
-
 };
-
 
 exports.getOne = async (req, res) => {
     console.log(req.body.id)
@@ -54,12 +35,7 @@ exports.getOne = async (req, res) => {
     var condition = id ? { id: id } : null;
 
     try {
-        const data = await User.findUnique({
-            where: condition,
-            // include: {
-            //   photo: true
-            // }
-        });
+        const data = await GetUserById(id)
         if (data) return res.send(data)
         message = `User with id [${id}] not exist`
         return res.status(400).send({ message: message })
@@ -70,7 +46,6 @@ exports.getOne = async (req, res) => {
     }
 };
 
-// Create and Save a new Tutorial
 exports.register = async (req, res) => {
     try {
         console.log(req.body)
@@ -83,18 +58,13 @@ exports.register = async (req, res) => {
             roleId
         } = req.body;
 
-        // Validate user input
-        if (!(username && name && email && password)) {
-            return res.status(400).send("All input is required");
-        }
-
         if (roleId) {
             roleId = Number(roleId)
         } else roleId = 3 // defaulted to basic user
 
         // check if user already exist
-        const oldEmail = await User.findUnique({ where: { email: email } });
-        const oldUsername = await User.findUnique({ where: { username: username } });
+        const oldEmail = await GetUserByEmail(email);
+        const oldUsername = await GetUserByUsername(username);
 
         if (oldEmail || oldUsername) {
             return res.status(409).send("username or email has been used. Please use other email address");
@@ -104,16 +74,17 @@ exports.register = async (req, res) => {
         encryptedPassword = await bcrypt.hash(password, 10);
 
         // Create user in our database
-        const newdata = await User.create({
-            data: {
-                username,
-                name,
-                email: email.toLowerCase(), // sanitize: convert email to lowercase
-                password: encryptedPassword,
-                roleId: roleId,
-            }
-        });
+        const userToCreate = {
+            username,
+            name,
+            email,
+            password: encryptedPassword,
+            roleId: roleId,
+        }
+        const newdata = await CreateUser (userToCreate)
 
+
+        // Generate Jwt Token
         const payload = {
             id: newdata.id,
             username,
@@ -121,14 +92,6 @@ exports.register = async (req, res) => {
             email,
             roleId: newdata.roleId,
         }
-
-        // let token_duration;
-
-        // if (req.body.token_duration && req.body.token_duration !== null) {
-        //     token_duration = Number(req.body.token_duration)
-        // } else token_duration = process.env.ACCESS_TOKEN_EXPIRE
-
-        // const { accessToken, refreshToken } = GenerateToken(payload, token_duration)
 
         const { accessToken, refreshToken } = GenerateJwtToken(payload)
 
